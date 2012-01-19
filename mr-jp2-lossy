@@ -1,12 +1,28 @@
 #!/bin/bash
 #Pre-batch ingest surrogate data stream creation
 #This script creates the lossy jp2
-mkdir jp2_lossy
 
-FILES="tif/*"
-for f in $FILES
+#LAUNCH_DIR=$PWD
+#JP2 ="jp2_lossy"
+#TIF ="tif"
+#
+#$CURRENT_DIR
+#if [ -d $JP2 ]; then
+#	echo "danke"
+#else
+#	echo `mkdir jp2_lossy`
+#fi
+#
+#if [-d $TIF ]; then
+#	echo "danke"
+#else
+#	echo "Input tif directory does not exist"
+#fi
+
+$CURRENT_DIR
+for f in $( ls );
 do
-  usr/local/djatoka/bin/Linux-x86-64/kdu_compress -i "$f" -o  ../jp2_lossy/"$f".jp2  -rate 0.5 Clayers=1 Clevels=7 "Cprecincts={256,256},{256,256},{256,256},{128,128},{128,128},{64,64},{64,64},{32,32},{16,16}" "Corder=RPCL" "ORGgen_plt=yes" "ORGtparts=R" "Cblk={32,32}" Cuse_sop=yes
+  /usr/local/djatoka/bin/Linux-x86-64/kdu_compress -i "$f" -o  ../$JP2/"$f".jp2  -rate 0.5 Clayers=1 Clevels=7 "Cprecincts={256,256},{256,256},{256,256},{128,128},{128,128},{64,64},{64,64},{32,32},{16,16}" "Corder=RPCL" "ORGgen_plt=yes" "ORGtparts=R" "Cblk={32,32}" Cuse_sop=yes
 done
 
 #cd ..

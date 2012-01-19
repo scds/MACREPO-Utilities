@@ -1,0 +1,43 @@
+#!/bin/bash
+#Super simple bash script to batch update all Islandora modules in the McMaster repository development environment
+
+cd /dc/git/repository/sites/all/modules/islandora && git pull islandora 6.x
+git push origin 6.x
+
+cd /dc/git/repository/sites/all/modules/islandora_collection_manager && git pull islandora 6.x
+git push origin 6.x
+
+cd /dc/git/repository/sites/all/modules/islandora_content_model_forms && git pull islandora 6.x
+git push origin 6.x
+
+cd /dc/git/repository/sites/all/modules/islandora_harvester && git pull islandora 6.x
+git push origin 6.x
+
+cd /dc/git/repository/sites/all/modules/islandora_solr_search && git pull islandora 6.x
+git push origin 6.x
+
+cd /dc/git/repository/sites/all/modules/islandora_solution_pack_audio && git pull islandora 6.x
+git push origin 6.x
+
+cd /dc/git/repository/sites/all/modules/islandora_solution_pack_book && git pull islandora 6.x
+git push origin 6.x
+
+cd /dc/git/repository/sites/all/modules/islandora_solution_pack_large_image && git pull islandora 6.x
+git push origin 6.x
+
+cd /dc/git/repository/sites/all/modules/islandora_solution_pack_image && git pull islandora 6.x
+git push origin 6.x
+
+cd /dc/git/repository/sites/all/modules/islandora_solution_pack_pdf && git pull islandora 6.x
+git push origin 6.x
+
+cd /dc/git/repository/sites/all/modules/islandora_xml_forms && git pull islandora 6.x
+git push origin 6.x
+
+cd /dc/git/repository/sites/all/modules/objective_forms && git pull islandora 6.x
+git push origin 6.x
+
+cd /dc/git/repository/sites/all/modules/php_lib && git pull islandora 6.x
+git push origin 6.x
+
+cd /dc/git/repository/sites/all/modules/islandora_batch_ingest && git pull

@@ -1,0 +1,4 @@
+#/bin/bash
+#Pre-batch ingest surrogate data stream creation
+#This script creates the thumbnail display jpg
+convert *.tif -thumbnail x2000 -thumbnail x450 -resize '450x<' -resize 50% -fuzz 1% -trim +repage -gravity center -crop 200x200+0+0 +repage -format jpg -quality 100

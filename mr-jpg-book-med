@@ -1,0 +1,4 @@
+#/bin/bash
+#Pre-batch ingest surrogate data stream creation
+#This script creates the medium display jpg
+mogrify -flatten -format jpg -resize 800 *.ti

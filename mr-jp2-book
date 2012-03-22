@@ -1,0 +1,7 @@
+#!/bin/bash
+#Pre-batch ingest surrogate data stream creation
+#This script creates the lossless jp2
+for f in $( ls );
+do
+  /usr/local/djatoka/bin/Linux-x86-64/kdu_compress -i "$f" -o  ../jp2/"$f".jp2 -rate 0.5 Clayers=1 Clevels=7 "Cprecincts={256,256},{256,256},{256,256},{128,128},{128,128},{64,64},{64,64},{32,32},{16,16}" "Corder=RPCL" "ORGgen_plt=yes" "ORGtparts=R" "Cblk={32,32}" Cuse_sop=yes
+done

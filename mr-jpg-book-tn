@@ -1,0 +1,4 @@
+#/bin/bash
+#Pre-batch ingest surrogate data stream creation
+#This script creates the thumbnail display jpg
+mogrify -flatten colorspace RGB -thumbnail 120x -format jpg -quality 100 *.tif

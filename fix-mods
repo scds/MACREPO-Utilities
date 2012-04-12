@@ -1,0 +1,12 @@
+#!/bin/bash
+#Pre-batch ingest MODS file clean-up to work with ingest scripts (lxml)
+#This scripts creates well formed xml that makes python and lxml happy
+for f in $( find . -name "*MODS.xml" )
+do
+	sed -i 's#<?xml version="1.0" encoding="UTF-8"?>##g' "$f";
+	sed -i 's#<modsCollection xmlns="http://www.loc.gov/mods/v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-2.xsd">##g' "$f";
+	sed -i 's#</modsCollection>##g' "$f";
+	sed -i 's#<mods version="3.2">#<mods version="3.2" xmlns:mods="http://www.loc.gov/mods/v3">#g' "$f";
+	sed -i 's#<#<mods:#g' "$f";
+	sed -i 's#<mods:/#</mods:#g' "$f";
+done

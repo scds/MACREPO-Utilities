@@ -1,0 +1,91 @@
+#!/bin/bash
+
+# This script preforms the pre-ingest tests and cleanup of digitized books before they ingested into the repository
+
+# Get to the books, setup logs and variables
+cd /big2/dc/ingest/books
+log() {logger -t scriptname "$@"; echo "$@"; }
+mkdir logs
+touch /big2/dc/ingest/books/logs/jps-books.log
+touch /big2/dc/ingest/books/logs/missing-ocr-and-pdf.log
+$JPGBOOKS = /big2/dc/ingest/books/logs/jps-books.log
+$MISSINGOCR = /big2/dc/ingest/books/logs/missing-ocr-and-pdf.log
+$IMAGES = IMAGES
+$METADATA = METADATA
+$OCR = OCR
+$PDF = PDF
+
+# Fix the MODS files, so the ingest script is happy
+for f in $( find . -name "*MODS.xml" )
+  do
+    sed -i 's#<?xml version="1.0" encoding="UTF-8"?>##g' "$f";
+    sed -i 's#<modsCollection xmlns="http://www.loc.gov/mods/v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-2.xsd">##g' "$f";
+    sed -i 's#</modsCollection>##g' "$f";
+    sed -i 's#<mods version="3.2">#<mods version="3.2" xmlns:mods="http://www.loc.gov/mods/v3">#g' "$f";
+    sed -i 's#<#<mods:#g' "$f";
+    sed -i 's#<mods:/#</mods:#g' "$f";
+done
+
+# Normalize the book sub-directories
+find . -iname "Images" -type d -exec mv -v {} IMAGES \;
+find . -iname "MetaData" -type d -exec mv -v {} METADATA \;
+find . -iname "Metadata" -type d -exec mv -v {} METADATA \;
+find . -iname "Thumbnails" -type -d -exec rm {} \;
+
+# Look for books that have pages as jps instead of tifs
+cd /big2/dc/ingest/books
+for i in $( ls );
+  do
+    cd $i
+    if [ -d IMAGES ];
+      then
+        cd IMAGES
+        for f in $( ls );
+          do
+            if [ ${file: -4} == ".jpg" ];
+              then
+                echo "I'm a very bad book."
+                mv -v /big2/dc/ingest/books/$i /big2/dc/ingest/issue-books/jpg-books
+              fi
+      done
+    fi
+done
+
+# Check to see if book has the following folders: IMAGES, METADATA, OCR, PDF
+cd /big2/dc/ingest/books
+for i in $( ls );
+  do
+    cd $i
+    if [ -d $IMAGES ] && if [ -d $METADATA] && if [ -d $PDF ] && if [ -d $OCR ];
+      then
+        echo "WE GOT A VALID BOOK BRO!"
+      else
+        echo "I'm a very bad book."
+        mv -v /big2/dc/ingest/books/$i /big2/dc/ingest/issue-books/missing-ocr
+    fi
+done
+
+# Look for books that have pages without OCLC number prefix in filenames
+
+# Setup surrogate sub directories and create surrogates, and extract fits output
+
+cd /big2/dc/ingest/books
+for i in $( ls );
+  do
+    cd $i
+    mkdir jp2 jpg tn fits
+    cd IMAGES && cp -v *.tif ../jpg && cp -v *.tif ../tn
+    /usr/local/djatoka/bin/Linux-x86-64/kdu_compress -i "$i" -o  ../jp2/"$i".jp2 -rate 0.5 Clayers=1 Clevels=7 "Cprecincts={256,256},{256,256},{256,256},{128,128},{128,128},{64,64},{64,64},{32,32},{16,16}" "Corder=RPCL" "ORGgen_plt=yes" "ORGtparts=R" "Cblk={32,32}" Cuse_sop=yes
+    cd ../tn
+    mogrify -thumbnail 120x -format jpg -quality 100 *.tif
+    rm *.tif
+    cd ../jpg
+    mogrify -format jpg -resize 800 *.tif
+    rm *.tif
+    cd ../IMAGES
+    for f in $( find . -name '*.tif')
+      do
+        /home/ruestn/downloads/fits-0.6.0/fits.sh -i $i -o ../fits/$i-fits.xml
+    done
+done
+

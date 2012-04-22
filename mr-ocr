@@ -1,7 +1,8 @@
 #!/bin/bash
 #Pre-batch ingest surrogate data stream creation
-#This script creates the lossless jp2
+#This script does batch ocr
 for f in $( ls );
 do
-  /usr/bin/tesseract "$f" ../ocr/"$f".txt -l eng
+  echo "Attempting to OCR $f"
+  /usr/local/bin/tesseract "$f" ../ocr/"$f" -l eng
 done

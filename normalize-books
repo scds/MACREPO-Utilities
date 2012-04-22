@@ -3,17 +3,11 @@
 # This script preforms the pre-ingest tests and cleanup of digitized books before they ingested into the repository
 
 # Get to the books, setup logs and variables
-cd /big2/dc/ingest/books
+BOOKS = cd /big2/dc/ingest/books
+cd $BOOKS
 log() {logger -t scriptname "$@"; echo "$@"; }
-mkdir logs
-touch /big2/dc/ingest/books/logs/jps-books.log
-touch /big2/dc/ingest/books/logs/missing-ocr-and-pdf.log
-$JPGBOOKS = /big2/dc/ingest/books/logs/jps-books.log
-$MISSINGOCR = /big2/dc/ingest/books/logs/missing-ocr-and-pdf.log
-$IMAGES = IMAGES
-$METADATA = METADATA
-$OCR = OCR
-$PDF = PDF
+JPGBOOKS = /big2/dc/ingest/books/logs/jps-books
+MISSINGOCR = /big2/dc/ingest/books/logs/missing-ocr-and-pdf
 
 # Fix the MODS files, so the ingest script is happy
 for f in $( find . -name "*MODS.xml" )
@@ -27,13 +21,13 @@ for f in $( find . -name "*MODS.xml" )
 done
 
 # Normalize the book sub-directories
-find . -iname "Images" -type d -exec mv -v {} IMAGES \;
-find . -iname "MetaData" -type d -exec mv -v {} METADATA \;
-find . -iname "Metadata" -type d -exec mv -v {} METADATA \;
 find . -iname "Thumbnails" -type -d -exec rm {} \;
+find . -iname "MetaData" -type d -exec rename -v 's/MetaData/METADATA/g' {} \;
+find . -iname "Metadata" -type d -exec rename -v 's/Metadata/METADATA/g' {} \;
+find . -iname "Images" -type d -exec rename -v 's/Images/IMAGES/g' {} \;
 
 # Look for books that have pages as jps instead of tifs
-cd /big2/dc/ingest/books
+cd $BOOKS
 for i in $( ls );
   do
     cd $i
@@ -45,31 +39,32 @@ for i in $( ls );
             if [ ${file: -4} == ".jpg" ];
               then
                 echo "I'm a very bad book."
-                mv -v /big2/dc/ingest/books/$i /big2/dc/ingest/issue-books/jpg-books
+                mv -v $BOOKS/$i $JPGBOOKS
               fi
       done
     fi
 done
 
 # Check to see if book has the following folders: IMAGES, METADATA, OCR, PDF
-cd /big2/dc/ingest/books
+cd $BOOKS
 for i in $( ls );
   do
     cd $i
-    if [ -d $IMAGES ] && if [ -d $METADATA] && if [ -d $PDF ] && if [ -d $OCR ];
+    if [ -d IMAGES ] && [ -d METADATA ] && [ -d PDF ] && [ -d OCR ];
       then
         echo "WE GOT A VALID BOOK BRO!"
       else
         echo "I'm a very bad book."
-        mv -v /big2/dc/ingest/books/$i /big2/dc/ingest/issue-books/missing-ocr
+        mv -v $BOOKS/$i $MISSINGOCR
     fi
+  cd $BOOKS
 done
 
 # Look for books that have pages without OCLC number prefix in filenames
 
 # Setup surrogate sub directories and create surrogates, and extract fits output
 
-cd /big2/dc/ingest/books
+cd $BOOKS
 for i in $( ls );
   do
     cd $i
